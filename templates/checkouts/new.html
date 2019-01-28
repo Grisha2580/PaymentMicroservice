@@ -11,7 +11,7 @@
       </p>
     </header>
 
-    <form id="payment-form" method="post" action="/checkouts">
+    <form id="payment-form" method="post" action="/payment_methods/">
       <section>
         <label for="amount">
           <span class="input-label">Customer ID</span>
@@ -41,7 +41,9 @@
     authorization: client_token,
     container: '#bt-dropin',
     paypal: {
-      flow: 'vault'
+      flow: 'checkout',
+        amount: 10.00,
+        currency: 'USD'
     }
   }, function (createErr, instance) {
     form.addEventListener('submit', function (event) {

@@ -7,9 +7,9 @@ sys.path.append('..')
 gateway = braintree.BraintreeGateway(
     braintree.Configuration(
         environment='sandbox',
-        merchant_id='',
-        public_key='',
-        private_key=''
+        merchant_id='xpv2rhvz28b3mht2',
+        public_key='kdzxg5n5s2bqv3y9',
+        private_key='638ac6b08bbf65e2f2e0679c62ff0a4c'
     )
 )
 
@@ -41,7 +41,10 @@ def search_customers(options):
     return gateway.customer.search(options)
 
 def delete_customer(customer_id):
-    return gateway.customer.delete()
+    return gateway.customer.delete(customer_id)
+
+def delete_payment_method(payment_token):
+    return gateway.payment_method.delete(payment_token)
 
 
 

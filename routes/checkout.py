@@ -1,21 +1,19 @@
-from flask import Flask, redirect, url_for, render_template, request, flash
+from flask import Flask, redirect, url_for, render_template, request, flash, make_response
 import sys
 sys.path.append('..')
-import os
-from os.path import join, dirname
-import braintree
-from config.local_config import generate_client_token,\
-    transact, find_transaction, create_payment, find_customer, cancel_subscription
+
+from config.local_config import generate_client_token, create_payment, delete_payment_method
 from flask_restful import Resource
 
 
 class Checkout(Resource):
     def get(self):
         client_token = generate_client_token()
-        return render_template('checkouts/new.html', client_token=client_token)
+        headers = {'Content-type':'text/html'}
+        return make_response(render_template('checkouts/new.html', client_token=client_token), 200, headers)
 
 
-class PaymentMethods(Resource):
+class PaymentMethodsList(Resource):
     def post(self):
         customer_id = request.form['customer_id']
         payment_method_nonce = request.form['payment_method_nonce']
@@ -26,15 +24,16 @@ class PaymentMethods(Resource):
 
         if result.is_success:
             return "Customer {} has created a new payment method".format(customer_id)
-            # return redirect(url_for('show_checkout', transaction_id=customer_id))
         else:
             for x in result.errors.deep_errors:
                 flash('Error: %s: %s' % (x.code, x.message))
 
             return redirect(url_for('payment_info'))
 
-    def delete(self, subscription_id):
-        result = cancel_subscription(subscription_id)
+
+class PaymentMethod(Resource):
+    def delete(self, payment_token):
+        result = delete_payment_method(payment_token)
 
         if result.is_success:
             return 'Your subscription is successfully canceled'
